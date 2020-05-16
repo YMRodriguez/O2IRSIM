@@ -15,11 +15,12 @@ class CGarbageFitnessFunction;
 #include "fitnessfunction.h"
 #include "simulator.h"
 #include "sensor.h"
-#include "batterysensor.h"
+#include "redbatterysensor.h"
 #include "groundsensor.h"
 #include "groundmemorysensor.h"
 #include "lightsensor.h"
 #include "bluelightsensor.h"
+#include "redlightsensor.h"
 #include "contactsensor.h"
 
 /******************************************************************************/
@@ -40,7 +41,7 @@ protected:
 		unsigned int m_unState;
 
 		CEpuck* m_pcEpuck;
-		CBatterySensor* m_seBattery;
+		CBatterySensor* m_seRedBattery;
 		
 		unsigned int m_unCollisionsNumber;
 		unsigned int m_unGreyFlag;

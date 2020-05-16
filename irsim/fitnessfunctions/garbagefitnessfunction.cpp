@@ -60,7 +60,7 @@ double CGarbageFitnessFunction::GetFitness()
 
   /* Start Exp3-5, Exp6-C , Exp 7-8*/
   double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(m_unCollisionsNumber,30.0)/30.0))) * ( (double) (fmin(m_unGreyCounter, 5.0)/ 5.0 ));
-  if (m_unGreyFlag == 0 )
+  if (m_unGreyFlag == 0 ) // Maximizas a los que hayan cogido varias
     fit /= 10.0;
   /* End Exp3-6 */
 
@@ -87,7 +87,7 @@ void CGarbageFitnessFunction::SimulationStep(unsigned int n_simulation_step, dou
 	/* Eval maximum speed partial fitness */
 	double maxSpeedEval = (fabs(leftSpeed - 0.5) + fabs(rightSpeed - 0.5));
 
-	/* Eval same directio partial fitness */
+	/* Eval same direction partial fitness */
 	double sameDirectionEval = 1 - sqrt(fabs(leftSpeed - rightSpeed));
 	
 	/* Eval minimum sensor reading partial fitness */
