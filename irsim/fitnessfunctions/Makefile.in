@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-subdir = renders/drawstuff
+subdir = fitnessfunctions
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -131,10 +131,13 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libdrawstuff_a_AR = $(AR) $(ARFLAGS)
-libdrawstuff_a_LIBADD =
-am_libdrawstuff_a_OBJECTS = drawstuff.$(OBJEXT) x11.$(OBJEXT)
-libdrawstuff_a_OBJECTS = $(am_libdrawstuff_a_OBJECTS)
+libfitnessfunctions_a_AR = $(AR) $(ARFLAGS)
+libfitnessfunctions_a_LIBADD =
+am_libfitnessfunctions_a_OBJECTS =  \
+	avoidcollisionsfitnessfunction.$(OBJEXT) \
+	garbagefitnessfunction.$(OBJEXT) loadfitnessfunction.$(OBJEXT) \
+	irifitnessfunction.$(OBJEXT) lightfitnessfunction.$(OBJEXT)
+libfitnessfunctions_a_OBJECTS = $(am_libfitnessfunctions_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -164,8 +167,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libdrawstuff_a_SOURCES)
-DIST_SOURCES = $(libdrawstuff_a_SOURCES)
+SOURCES = $(libfitnessfunctions_a_SOURCES)
+DIST_SOURCES = $(libfitnessfunctions_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -282,9 +285,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-INCLUDES = -I/usr/X11R6/include/
-lib_LIBRARIES = libdrawstuff.a
-libdrawstuff_a_SOURCES = drawstuff.cpp x11.cpp
+INCLUDES = -I/.. -I../arenas -I../collisions -I../objects -I../experiments -I../sensors -I../actuators -I../controllers
+lib_LIBRARIES = libfitnessfunctions.a
+libfitnessfunctions_a_SOURCES = avoidcollisionsfitnessfunction.cpp garbagefitnessfunction.cpp loadfitnessfunction.cpp irifitnessfunction.cpp lightfitnessfunction.cpp
 all: all-am
 
 .SUFFIXES:
@@ -298,9 +301,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign renders/drawstuff/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign fitnessfunctions/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign renders/drawstuff/Makefile
+	  $(AUTOMAKE) --foreign fitnessfunctions/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -350,10 +353,10 @@ uninstall-libLIBRARIES:
 clean-libLIBRARIES:
 	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
 
-libdrawstuff.a: $(libdrawstuff_a_OBJECTS) $(libdrawstuff_a_DEPENDENCIES) $(EXTRA_libdrawstuff_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libdrawstuff.a
-	$(AM_V_AR)$(libdrawstuff_a_AR) libdrawstuff.a $(libdrawstuff_a_OBJECTS) $(libdrawstuff_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libdrawstuff.a
+libfitnessfunctions.a: $(libfitnessfunctions_a_OBJECTS) $(libfitnessfunctions_a_DEPENDENCIES) $(EXTRA_libfitnessfunctions_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libfitnessfunctions.a
+	$(AM_V_AR)$(libfitnessfunctions_a_AR) libfitnessfunctions.a $(libfitnessfunctions_a_OBJECTS) $(libfitnessfunctions_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libfitnessfunctions.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -361,8 +364,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/drawstuff.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/x11.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/avoidcollisionsfitnessfunction.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/garbagefitnessfunction.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/irifitnessfunction.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lightfitnessfunction.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/loadfitnessfunction.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
