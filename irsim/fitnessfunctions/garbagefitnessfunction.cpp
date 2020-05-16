@@ -186,12 +186,12 @@ void CGarbageFitnessFunction::SimulationStep(unsigned int n_simulation_step, dou
 
   //if (groundMemory[0] > 0.0)
   //{
-    //fitness = ( lightS0 + lightS7);
+  //  fitness = ( lightS0 + lightS7);
   //}
   //else
   //{
-    //fitness = ( blueLightS0 + blueLightS7);
-  //}
+  //  fitness = ( blueLightS0 + blueLightS7);
+ // }
 
 	/* END Garbage Exp 2 */
 	
@@ -219,27 +219,27 @@ void CGarbageFitnessFunction::SimulationStep(unsigned int n_simulation_step, dou
 	/* END Garbage Exp 3 */
   
   /* START Garbage Exp 4-5 */
-  //double fitness = 1; //maxSpeedEval * sameDirectionEval;
+  double fitness = 1; //maxSpeedEval * sameDirectionEval;
 
-  //if (groundMemory[0] > 0.0)
-  //{
-    //fitness *= ( lightS0 + lightS7);
-    //if (m_unGreyFlag == 0)
-    //{
-      //m_unGreyFlag = 1;
-      //m_unGreyCounter++;
-    //}
-  //}
-  //else
-  //{
-    //fitness *= ( blueLightS0 + blueLightS7);
-    //if (m_unGreyFlag == 1)
-    //{
-      //m_unGreyFlag = 0;
-    //}
-  //}
+  if (groundMemory[0] > 0.0)
+  {
+    fitness *= ( lightS0 + lightS7);
+    if (m_unGreyFlag == 0)
+    {
+      m_unGreyFlag = 1;
+      m_unGreyCounter++;
+    }
+  }
+  else
+  {
+    fitness *= ( blueLightS0 + blueLightS7);
+    if (m_unGreyFlag == 1)
+    {
+      m_unGreyFlag = 0;
+    }
+  }
 
-  //fitness *= maxProxSensorEval * (leftSpeed * rightSpeed); // * (1-maxLightSensorEval);
+  fitness *= maxProxSensorEval * (leftSpeed * rightSpeed); // * (1-maxLightSensorEval);
 	/* END Garbage Exp 4-5 */
   
   /* START Garbage Exp 6A */
@@ -283,25 +283,25 @@ void CGarbageFitnessFunction::SimulationStep(unsigned int n_simulation_step, dou
 	/* END Garbage Exp 6C */
   
   /* START Garbage Exp 7-8 */
-  double fitness = 1; //0.5 * (maxSpeedEval * sameDirectionEval);
+  // double fitness = 1; //0.5 * (maxSpeedEval * sameDirectionEval);
 
-  if (groundMemory[0] > 0.0)
-  {
-    fitness *= ( lightS0 + lightS7)/2;
-    if (m_unGreyFlag == 0)
-    {
-      m_unGreyFlag = 1;
-      m_unGreyCounter++;
-    }
-  }
-  else
-  {
-    fitness *= (( blueLightS0 + blueLightS7)/2);
-    if (m_unGreyFlag == 1)
-    {
-      m_unGreyFlag = 0;
-    }
-  }
+  // if (groundMemory[0] > 0.0)
+  // {
+  //   fitness *= ( lightS0 + lightS7)/2;
+  //   if (m_unGreyFlag == 0)
+  //   {
+  //     m_unGreyFlag = 1;
+  //     m_unGreyCounter++;
+  //   }
+  // }
+  // else
+  // {
+  //   fitness *= (( blueLightS0 + blueLightS7)/2);
+  //   if (m_unGreyFlag == 1)
+  //   {
+  //     m_unGreyFlag = 0;
+  //   }
+  // }
 	/* END Garbage Exp 7-8 */
 
  
