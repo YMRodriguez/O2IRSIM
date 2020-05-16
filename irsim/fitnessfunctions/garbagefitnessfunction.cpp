@@ -104,6 +104,9 @@ void CGarbageFitnessFunction::SimulationStep(unsigned int n_simulation_step, dou
 	double blueLightS7=0;
 	double lightS0=0;
 	double lightS7=0;
+  double redLightS0=0;
+  double redLightS7=0;
+  
 
 	for (TSensorIterator i = vecSensors.begin(); i != vecSensors.end(); i++)
 	{
