@@ -94,14 +94,11 @@ void CGarbageFitnessFunction::SimulationStep(unsigned int n_simulation_step, dou
 	double maxProxSensorEval = 0;
 	double maxLightSensorEval = 0;
 	double maxBlueLightSensorEval = 0;
-  double maxRedLightSensorEval = 0;
 	double lightRange = 0;
 	TSensorVector vecSensors = m_pcEpuck->GetSensors();
 
 	double* groundMemory;
 	double* ground;
-  double* battery;
-	double* redBattery;
 	
   double blueLightS0=0;
 	double blueLightS7=0;
@@ -171,28 +168,6 @@ void CGarbageFitnessFunction::SimulationStep(unsigned int n_simulation_step, dou
           blueLightS7 = pfThisSensorInputs[j];
 			}
 		}
-    		else if ( (*i)->GetType() == SENSOR_REAL_RED_LIGHT)
-		{
-			unsigned int unThisSensorsNumberOfInputs = (*i)->GetNumberOfInputs();
-			double* pfThisSensorInputs = (*i)->GetComputedSensorReadings();
-
-			for (int j = 0; j < unThisSensorsNumberOfInputs; j++)
-			{
-				if ( pfThisSensorInputs[j] > maxRedLightSensorEval )
-				{	
-					maxRedLightSensorEval = pfThisSensorInputs[j];
-				}
-        if (j==0)
-          redLightS0 = pfThisSensorInputs[j];
-        else if (j==7)
-          redLightS7 = pfThisSensorInputs[j];
-			}
-		}
-
-        else if( (*i)->GetType() == SENSOR_RED_BATTERY)
-    {
-        redBattery = (*i)->GetComputedSensorReadings();
-    }
 	}
 
 	maxProxSensorEval = 1 - maxProxSensorEval;
@@ -248,7 +223,7 @@ void CGarbageFitnessFunction::SimulationStep(unsigned int n_simulation_step, dou
   
   /* START Garbage Exp 4-5 */
   double fitness = 1; //maxSpeedEval * sameDirectionEval;
-  
+
   if (groundMemory[0] > 0.0)
   {
     fitness *= ( lightS0 + lightS7);

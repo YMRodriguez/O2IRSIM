@@ -237,7 +237,11 @@ irifitnessfunction.o: irifitnessfunction.cpp /usr/include/stdc-predef.h \
  ../collisions/collisioncallback.h ../objects/groundarea.h \
  ../objects/lightobject.h ../objects/bluelightobject.h \
  ../objects/redlightobject.h ../sensor.h ../actuator.h ../controller.h \
- ../simulator.h ../collisions/collisionmanager.h
+ ../simulator.h ../sensor.h ../sensors/redbatterysensor.h ../arena.h \
+ ../sensors/groundsensor.h ../sensors/groundmemorysensor.h \
+ ../sensors/lightsensor.h ../sensors/bluelightsensor.h \
+ ../sensors/redlightsensor.h ../sensors/contactsensor.h \
+ ../collisions/collisionmanager.h
 
 /usr/include/stdc-predef.h:
 
@@ -916,5 +920,23 @@ irifitnessfunction.h:
 ../controller.h:
 
 ../simulator.h:
+
+../sensor.h:
+
+../sensors/redbatterysensor.h:
+
+../arena.h:
+
+../sensors/groundsensor.h:
+
+../sensors/groundmemorysensor.h:
+
+../sensors/lightsensor.h:
+
+../sensors/bluelightsensor.h:
+
+../sensors/redlightsensor.h:
+
+../sensors/contactsensor.h:
 
 ../collisions/collisionmanager.h:

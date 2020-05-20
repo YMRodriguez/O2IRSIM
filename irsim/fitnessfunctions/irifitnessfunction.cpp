@@ -1,6 +1,8 @@
 #include "irifitnessfunction.h"
 #include "collisionmanager.h"
 
+#define SEARCH 	0
+#define DEPOSIT 1
 /******************************************************************************/
 /******************************************************************************/
 
@@ -30,6 +32,12 @@ CIriFitnessFunction::CIriFitnessFunction(const char* pch_name,
 
 	m_unNumberOfSteps = 0;
 	m_fComputedFitness = 0.0;
+	m_unState = SEARCH;
+
+	
+	m_unCollisionsNumber= 0;		
+	m_unGreyFlag = 0;
+	m_unGreyCounter = 0;
 	
 }
 
@@ -54,10 +62,12 @@ double CIriFitnessFunction::GetFitness()
  	 double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(m_unCollisionsNumber,30.0)/30.0))) * ( (double) (fmin(m_unGreyCounter, 5.0)/ 5.0 ));
  	 if (m_unGreyFlag == 0 ) // Maximizas a los que hayan cogido varias
     	fit /= 10.0;
- 	 /* End Exp3-6 */
+ 	 /* End Exp5 */
 
 	/* If fitness less than 0, put it to 0 */
 	if ( fit < 0.0 ) fit = 0.0;
+	if ( fit > 1.0 ) fit = 1.0;
+
 
 	return fit;
 }
@@ -104,10 +114,6 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double* groundMemory;
 	/* Where the GROUND will be stored */
 	double* ground;
-	/* whre the BATTERY will be sotored */
-	double *battery;
-	/* whre the BLUE BATTERY will be sotored */
-	double *blueBattery;
 	/* whre the RED BATTERY will be sotored */
 	double *redBattery;
 
@@ -270,6 +276,19 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 
 	m_unNumberOfSteps++;
 	m_fComputedFitness += fitness;
+
+		/* Get Collisions */
+	int nContact = 0;
+	CContactSensor *m_seContact = (CContactSensor*) m_pcEpuck->GetSensor(SENSOR_CONTACT);
+	double* contact = m_seContact->GetSensorReading(m_pcEpuck);
+	for ( int j = 0 ; j < m_seContact->GetNumberOfInputs() ; j++)
+	{
+		if(contact[j] > 0.0) 
+			nContact=1;
+	} 
+
+	if ( nContact == 1 )
+		m_unCollisionsNumber++;		
 }
 
 /******************************************************************************/
