@@ -49,7 +49,12 @@ double CIriFitnessFunction::GetFitness()
 	int coll = (CCollisionManager::GetInstance()->GetTotalNumberOfCollisions());
 
 	/* Get the fitness divided by the number of steps */
-	double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(coll,10.0)/10.0)));
+	//double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(coll,10.0)/10.0)));
+	/* Start Exp5*/
+ 	 double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(m_unCollisionsNumber,30.0)/30.0))) * ( (double) (fmin(m_unGreyCounter, 5.0)/ 5.0 ));
+ 	 if (m_unGreyFlag == 0 ) // Maximizas a los que hayan cogido varias
+    	fit /= 10.0;
+ 	 /* End Exp3-6 */
 
 	/* If fitness less than 0, put it to 0 */
 	if ( fit < 0.0 ) fit = 0.0;
@@ -110,6 +115,8 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double blueLightS7=0;
 	double lightS0=0;
 	double lightS7=0;
+	double redLightS0=0;
+    double redLightS7=0;
 
 	/* Auxiluar variables */
 	unsigned int unThisSensorsNumberOfInputs; 
@@ -205,14 +212,6 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 				break;
 
 			/* If sensor is BATTERY */
-			case SENSOR_BATTERY:
-         battery = (*i)->GetComputedSensorReadings();
-				 break;
-			
-			case SENSOR_BLUE_BATTERY:
-				blueBattery = (*i)->GetComputedSensorReadings();
-				break;
-			
 			case SENSOR_RED_BATTERY:
 				redBattery = (*i)->GetComputedSensorReadings();
 				break;
@@ -241,6 +240,31 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
 
 	double fitness = 1.0;
+
+	if(redBattery[0] > 0.5){
+		if (groundMemory[0] > 0.0)
+ 		 {
+ 		   fitness *= ( lightS0 + lightS7);
+  		  if (m_unGreyFlag == 0)
+  		  {
+  		    m_unGreyFlag = 1;
+  		    m_unGreyCounter++;
+  		  }
+ 		 }
+ 		 else
+ 		 {
+ 		   fitness *= ( blueLightS0 + blueLightS7);
+ 		   if (m_unGreyFlag == 1)
+ 		   {
+     		 m_unGreyFlag = 0;
+    	   }
+  		}
+	}else{
+		 fitness *= ( redLightS0 + redLightS7);
+	}
+	
+
+  	fitness *= (1 - maxProxSensorEval) * (leftSpeed * rightSpeed) * maxSpeedEval * sameDirectionEval; //*(1-maxLightSensorEval);
 	
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
 
