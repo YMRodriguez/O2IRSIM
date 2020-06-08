@@ -1,6 +1,8 @@
 #include "irifitnessfunction.h"
 #include "collisionmanager.h"
 
+#define SEARCH 	0
+#define DEPOSIT 1
 /******************************************************************************/
 /******************************************************************************/
 
@@ -30,6 +32,12 @@ CIriFitnessFunction::CIriFitnessFunction(const char* pch_name,
 
 	m_unNumberOfSteps = 0;
 	m_fComputedFitness = 0.0;
+	m_unState = SEARCH;
+
+	
+	m_unCollisionsNumber= 0;		
+	m_unGreyFlag = 0;
+	m_unGreyCounter = 0;
 	
 }
 
@@ -49,10 +57,13 @@ double CIriFitnessFunction::GetFitness()
 	int coll = (CCollisionManager::GetInstance()->GetTotalNumberOfCollisions());
 
 	/* Get the fitness divided by the number of steps */
-	double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(coll,10.0)/10.0)));
+ 	 double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(m_unCollisionsNumber,30.0)/30.0))) * ( (double) (fmin(m_unGreyCounter, 5.0)/ 5.0 ));
+ 	 
 
 	/* If fitness less than 0, put it to 0 */
 	if ( fit < 0.0 ) fit = 0.0;
+	if ( fit > 1.0 ) fit = 1.0;
+
 
 	return fit;
 }
@@ -99,17 +110,21 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double* groundMemory;
 	/* Where the GROUND will be stored */
 	double* ground;
-	/* whre the BATTERY will be sotored */
-	double *battery;
-	/* whre the BLUE BATTERY will be sotored */
-	double *blueBattery;
 	/* whre the RED BATTERY will be sotored */
 	double *redBattery;
 
 	double blueLightS0=0;
+	double blueLightS2=0;
+	double blueLightS5=0;
 	double blueLightS7=0;
 	double lightS0=0;
+	double lightS2=0;
+	double lightS5=0;
 	double lightS7=0;
+	double redLightS0=0;
+	double redLightS2=0;
+	double redLightS5=0;
+    	double redLightS7=0;
 
 	/* Auxiluar variables */
 	unsigned int unThisSensorsNumberOfInputs; 
@@ -170,6 +185,10 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 					}
 					if (j==0)
 						lightS0 = pfThisSensorInputs[j];
+					else if (j==2)
+						lightS2 = pfThisSensorInputs[j];
+					else if (j==5)
+						lightS5 = pfThisSensorInputs[j];
 					else if (j==7)
 						lightS7 = pfThisSensorInputs[j];
 				}
@@ -186,6 +205,10 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 					}
 					if (j==0)
 						blueLightS0 = pfThisSensorInputs[j];
+					else if (j==2)
+						blueLightS2 = pfThisSensorInputs[j];
+					else if (j==5)
+						blueLightS5 = pfThisSensorInputs[j];
 					else if (j==7)
 						blueLightS7 = pfThisSensorInputs[j];
 				}
@@ -201,18 +224,18 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 					{	
 						maxRedLightSensorEval = pfThisSensorInputs[j];
 					}
+					if (j==0)
+						redLightS0 = pfThisSensorInputs[j];
+					else if (j==2)
+						redLightS2 = pfThisSensorInputs[j];
+					else if (j==5)
+						redLightS5 = pfThisSensorInputs[j];
+					else if (j==7)
+						redLightS7 = pfThisSensorInputs[j];
 				}
 				break;
 
 			/* If sensor is BATTERY */
-			case SENSOR_BATTERY:
-         battery = (*i)->GetComputedSensorReadings();
-				 break;
-			
-			case SENSOR_BLUE_BATTERY:
-				blueBattery = (*i)->GetComputedSensorReadings();
-				break;
-			
 			case SENSOR_RED_BATTERY:
 				redBattery = (*i)->GetComputedSensorReadings();
 				break;
@@ -241,11 +264,42 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
 
 	double fitness = 1.0;
+
+	if(redBattery[0] > 0.35){
+		if (groundMemory[0] > 0.0){
+ 		  fitness *= ( lightS0 + lightS2 + lightS5 + lightS7)/1.5;
+  		  if (m_unGreyFlag == 0){
+  		    m_unGreyFlag = 1;
+  		    m_unGreyCounter++;
+  		  }
+ 		}else{
+ 		   fitness *= ( blueLightS0 + blueLightS2 + blueLightS5 + blueLightS7);
+ 		   if (m_unGreyFlag == 1){ m_unGreyFlag = 0;}
+  	        }
+	}else{
+		fitness *= ( redLightS0 + redLightS2+ redLightS5 + redLightS7)*2;
+	}
+	
+
+  	fitness *= (1 - maxProxSensorEval) * maxSpeedEval * (leftSpeed * rightSpeed) * sameDirectionEval* (fmin(redBattery[0],0.2)/0.2);//maxRedLightSensorEval; 
 	
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
 
 	m_unNumberOfSteps++;
 	m_fComputedFitness += fitness;
+
+		/* Get Collisions */
+	int nContact = 0;
+	CContactSensor *m_seContact = (CContactSensor*) m_pcEpuck->GetSensor(SENSOR_CONTACT);
+	double* contact = m_seContact->GetSensorReading(m_pcEpuck);
+	for ( int j = 0 ; j < m_seContact->GetNumberOfInputs() ; j++)
+	{
+		if(contact[j] > 0.0) 
+			nContact=1;
+	} 
+
+	if ( nContact == 1 )
+		m_unCollisionsNumber++;		
 }
 
 /******************************************************************************/
