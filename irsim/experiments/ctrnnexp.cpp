@@ -43,6 +43,7 @@ static char* pchHeightMap =
 "%##################%"
 "%##################%"
 "%##################%"
+"%#####%############%"
 "%##################%"
 "%##################%"
 "%##################%"
@@ -51,55 +52,13 @@ static char* pchHeightMap =
 "%##################%"
 "%##################%"
 "%##################%"
-"%##################%"
-"%##################%"
+"%############%#####%"
 "%##################%"
 "%##################%"
 "%##################%"
 "%##################%"
 "%%%%%%%%%%%%%%%%%%%%";
 
-//"%%%%%%%%%%%%%%%%%%%%"
-//"%##################%"
-//"%##################%"
-//"%##########%#######%"
-//"%##########%#######%"
-//"%#%%%######%#######%"
-//"%############%%%###%"
-//"%##################%"
-//"%##########%#######%"
-//"%###########%%%%%##%"
-//"%##################%"
-//"%%%%%%#############%"
-//"%##################%"
-//"%##################%"
-//"%#####%%###########%"
-//"%#####%%###########%"
-//"%#####%%%%%########%"
-//"%##################%"
-//"%##################%"
-//"%%%%%%%%%%%%%%%%%%%%";
-
-//"%%%%%%%%%%%%%%%%%%%%"
-//"%##################%"
-//"%##################%"
-//"%##################%"
-//"%###########%%%####%"
-//"%##################%"
-//"%##################%"
-//"%##################%"
-//"%##################%"
-//"%##################%"
-//"%##%%%#############%"
-//"%##################%"
-//"%##################%"
-//"%##################%"
-//"%##################%"
-//"%##################%"
-//"%###########%%%####%"
-//"%##################%"
-//"%##################%"
-//"%%%%%%%%%%%%%%%%%%%%";
 extern gsl_rng* rng;
 extern long int rngSeed;
 
@@ -943,5 +902,77 @@ void CCTRNNExp::RandomPositionAndOrientation ( void )
 		i++;
 	}
 
+	/* GENERATING RANDOM GREY AREAS */
+ 	CArena* pc_arena=m_pcSimulator->GetArena();
+
+  	/* Get a random x,y pair for all blueLightObjets */
+  	dVector2 vCenter[m_nBlueLightObjectNumber];
+  	for( int i = 0 ; i < m_nBlueLightObjectNumber ; i++)
+  	{
+    	vCenter[i].x = ( Random::nextDouble() * m_fInitAreaX * 2.0 ) - m_fInitAreaX;
+    	vCenter[i].y = ( Random::nextDouble() * m_fInitAreaY * 2.0 ) - m_fInitAreaY;
+  	}
+
+  	/* DEBUG */
+  	//for( int i = 0 ; i < m_nBlueLightObjectNumber ; i++)
+  	//printf("RandomCenter %d: %2f, %2f\n", i, vCenter[i].x, vCenter[i].y);
+  	/* END DEBUG */
+
+  	/* Set all grey areas on the x,y pair of bluelightobjets */
+  	vector<CGroundArea*> vGroundAreas=pc_arena->GetGroundAreas();
+  	vector<CGroundArea*>::iterator it_ground=vGroundAreas.begin();
+
+  	int nCounterBlue = 0;
+  	double f_color;
+  	while(it_ground!=vGroundAreas.end())
+  	{
+    	(*it_ground)->GetColor(&f_color);
+    	if (f_color == 0.5)
+    	{
+      	(*it_ground)->SetCenter(vCenter[nCounterBlue]);
+      	nCounterBlue++;
+      	/* DEBUG */
+      	//printf("RandomCenter %d: %2f, %2f\n", nCounterBlue, vCenter[i].x, vCenter[i].y);
+      	/* END DEBUG */
+    	}
+    	it_ground++;
+  	}
+  	
+  	/* Set all bluelightobjets on the x,y pair of bluelightobjets */
+	nCounterBlue = 0;
+  	vector<CBlueLightObject*> vBlueLightObject=pc_arena->GetBlueLightObject();
+ 	vector<CBlueLightObject*>::iterator it_blueLightobject=vBlueLightObject.begin();
+
+ 	 while(it_blueLightobject!=vBlueLightObject.end())
+ 	 {
+  	  (*it_blueLightobject)->SetCenter(vCenter[nCounterBlue]);
+  	  nCounterBlue++;
+  	  it_blueLightobject++;
+ 	 }
+ 	 
+
+	/* Get a random x,y pair for all redLightObjets */
+  	dVector2 vCenter2[m_nRedLightObjectNumber];
+  	for( int i = 0 ; i < m_nRedLightObjectNumber ; i++)
+  	{
+    	vCenter2[i].x = ( Random::nextDouble() * m_fInitAreaX * 2.0 ) - m_fInitAreaX;
+    	vCenter2[i].y = ( Random::nextDouble() * m_fInitAreaY * 2.0 ) - m_fInitAreaY;
+  	}
+	
+	
+	/* Set all redlightobjets on the x,y pair of redlightobjets */
+	int nCounterRed = 0;  	
+	vector<CRedLightObject*> vRedLightObject=pc_arena->GetRedLightObject();
+ 	vector<CRedLightObject*>::iterator it_redLightobject=vRedLightObject.begin();
+
+ 	 while(it_redLightobject!=vRedLightObject.end())
+ 	 {
+  	  (*it_redLightobject)->SetCenter(vCenter2[nCounterRed]);
+  	  nCounterRed++;
+  	  it_redLightobject++;
+ 	 }
+	
+
 	m_pcCollisionManager->Reset();
 }
+
